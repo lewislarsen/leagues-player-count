@@ -14,12 +14,22 @@ class IndexController extends Controller
      */
     public function __invoke(Request $request): View
     {
+        // Set a default value for the number of days to look back
+        $defaultDays = 8;
+
+        // Get the `days` parameter from the request, ensure it is a positive integer
+        $days = $request->query('days', $defaultDays);
+        $days = filter_var($days, FILTER_VALIDATE_INT, [
+            'options' => ['default' => $defaultDays, 'min_range' => 1, 'max_range' => 30],
+        ]);
+
         $startDate = Carbon::parse(config('leagues.start_date'));
         $endDate = Carbon::parse(config('leagues.end_date'));
 
         $isWithinLeaguesPeriod = Carbon::now()->between($startDate, $endDate);
 
-        $playerData = GameWorld::getLeaguesAveragePlayerCountForPastDays(8);
+        // Retrieve player data for the specified number of days
+        $playerData = GameWorld::getLeaguesAveragePlayerCountForPastDays($days);
 
         // Format the date for each entry
         $playerData = array_map(function ($dayData) {
@@ -31,6 +41,7 @@ class IndexController extends Controller
         return view('index', [
             'playerData' => $playerData,
             'isWithinLeaguesPeriod' => $isWithinLeaguesPeriod,
+            'days' => $days, // Pass the days parameter to the view for reference
         ]);
     }
 }
