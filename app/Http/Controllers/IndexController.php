@@ -14,9 +14,9 @@ class IndexController extends Controller
      */
     public function __invoke(Request $request): View
     {
-        // Define start and end dates for leagues
-        $startDate = Carbon::parse('27 November 2024');
-        $endDate = Carbon::parse('22 January 2025');
+        // Define start and end dates for leagues (configured in config)
+        $startDate = Carbon::parse(config('leagues.start_date'));
+        $endDate = Carbon::parse(config('leagues.end_date'));
 
         // Check if today is within the leagues period
         $isWithinLeaguesPeriod = Carbon::now()->between($startDate, $endDate);
