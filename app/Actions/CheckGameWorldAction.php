@@ -8,12 +8,12 @@ use DOMXPath;
 use GuzzleHttp\Client;
 use RuntimeException;
 
-class CheckGameWorldAction {
-
+class CheckGameWorldAction
+{
     public function execute(): void
     {
         // Guzzle client to fetch the page
-        $client = new Client();
+        $client = new Client;
         $response = $client->get('https://oldschool.runescape.com/slu');
 
         if ($response->getStatusCode() !== 200) {
@@ -23,12 +23,12 @@ class CheckGameWorldAction {
         $html = $response->getBody()->getContents();
 
         // Parse the HTML
-        $dom = new DOMDocument();
+        $dom = new DOMDocument;
         @$dom->loadHTML($html); // Suppress warnings
         $xpath = new DOMXPath($dom);
 
-        // Query all rows of the game worlds table
-        $rows = $xpath->query("//tr[@class='server-list__row']");
+        // Query both types of rows: normal rows and member rows
+        $rows = $xpath->query("//tr[contains(@class, 'server-list__row')]");
 
         foreach ($rows as $row) {
             // Extract data for each column
@@ -49,7 +49,7 @@ class CheckGameWorldAction {
             $type = $typeCell->item(0)->nodeValue ?? null;
 
             // Extract activity (fifth td element contains the activity info, e.g., "750 skill total")
-            $activityCell = $xpath->query(".//td[last()]", $row);
+            $activityCell = $xpath->query('.//td[last()]', $row);
             $activity = $activityCell->item(0)->nodeValue ?? null;
 
             // Insert into the database (create a new record)
