@@ -13,33 +13,54 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 </head>
-<body class="bg-gray-800 h-full flex justify-center items-center">
+<body class="bg-gray-800 h-full flex flex-col justify-center items-center">
 <div class="max-w-3xl mt-20 mx-auto px-6 py-8 bg-gray-900 rounded-lg shadow-lg">
-    <h1 class="text-gray-50 text-3xl font-medium text-center">
+    <div class="mx-auto text-center">
+        <img src="{{ asset('leagues.png') }}" alt="{{ __('Leagues logo') }}" title="{{ __('Leagues logo') }}" class="h-26 w-auto mb-8 inline" />
+    </div>
+    <h1 class="text-gray-50 text-3xl font-medium text-center mb-6">
         {{ __('Recent Leagues Player Data') }}
     </h1>
-    <div class="mt-8">
-        <div class="grid grid-cols-5 gap-4">
-            <div class="bg-gray-900 rounded-lg text-white text-sm p-4 font-semibold text-center">
-                {{ __('Date') }}
-            </div>
-            <div class="bg-gray-900 rounded-lg text-white text-sm p-4 font-semibold text-center">
-                {{ __('Players Count') }}
-            </div>
-        </div>
 
-        <!-- Loop through the player data for the last 8 days -->
+    <!-- Show message if leagues are not active -->
+    @if (!$isWithinLeaguesPeriod)
+        <div class="mt-4 p-4 bg-red-500 text-white text-base rounded-lg">
+            <p>
+                {{ __('Leagues are currently inactive. Stay tuned for updates on upcoming leagues!') }}
+                <a href="https://secure.runescape.com/m=news" target="_blank" class="text-white font-bold underline">
+                    {{ __('Check Old School RuneScape news posts for details.') }}
+                </a>
+            </p>
+        </div>
+    @endif
+
+    <!-- Player Data Table -->
+    <div class="mt-8">
+        <!-- Table Header -->
+        <div class="grid grid-cols-2 gap-4 bg-gray-800 text-white text-lg font-semibold py-3 px-4 rounded-t-lg">
+            <div>{{ __('Date') }}</div>
+            <div>{{ __('Avg. Leagues Player Count') }}</div>
+        </div>
+        <!-- Table Rows -->
         @foreach ($playerData as $dayData)
-            <div class="grid grid-cols-5 gap-4 mt-4">
-                <div class="bg-gray-700 rounded-lg text-white text-sm p-4 text-center">
-                    {{ $dayData['day'] }}
-                </div>
-                <div class="bg-gray-700 rounded-lg text-white text-sm p-4 text-center">
-                    {{ $dayData['player_count'] > 0 ? $dayData['player_count'] : '—' }}
+            <div class="grid grid-cols-2 gap-4 items-center py-3 px-4 bg-gray-700 text-white border-b border-gray-600">
+                <div>{{ $dayData['day'] }}</div>
+                <div class="text-center">
+                    {{ $dayData['player_count'] > 0 ? number_format($dayData['player_count']) : '—' }}
                 </div>
             </div>
         @endforeach
     </div>
 </div>
+
+<!-- Footer -->
+<footer class="mt-8 w-full text-center py-4 bg-gray-900 text-gray-400 text-sm">
+    <p>
+        {{ __('This project is open-source and uses data sourced from the Old School RuneScape website.') }}
+        <a href="https://github.com/lewislarsen/leagues-player-count" target="_blank" class="text-blue-400 hover:underline">
+            {{ __('View on GitHub') }}
+        </a>
+    </p>
+</footer>
 </body>
 </html>
